@@ -1,0 +1,62 @@
+<h3> Create a quiz </h3>
+<form>
+<div class="form-group" ng-repeat="question in quiz.questions">
+    <label ng-if="question.type == 'numeric'" for="q_{{$$index}}"> {{question.title}} </label>
+    <input class="form-control" ng-if="question.type == 'numeric'" type="number">
+
+    <div ng-if="question.type == 'multiple_select'">
+        <label for="q_{{$$index}}"> {{question.title}} </label></br>
+        <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-primary" ng-repeat="choice in question.choices">
+                <input type="radio" name="options" id="o_{{choice}}"> {{choice}}
+            </label>
+        </div>
+    </div>
+
+    <div ng-if="question.type == 'time'">
+        <label for="q_{{$$index}}"> {{question.title}} </label>
+        <input type="time">
+    </div>
+</div>
+</form>
+<hr>
+<form class="col-md-4 form-horizontal">
+    <div class="form-group">
+        <label class="col-md-1 control-label" for="loc_name">Type:</label> 
+        <div class="col-md-4"><select class="form-control" id="event_type" ng-model="question.type" ng-options="key as value for (key, value)  in question_typeVals"></select></div>
+    </div>
+    <div ng-if="question.type">
+        <div class="form-group">
+            <label class="col-md-1 control-label" for="loc_name">Title</label> 
+            <div class="col-md-11"><input class="form-control" id="question_title" type="text" ng-model="question.title"/></div>
+        </div>
+        <div ng-if="question.type == 'multiple_select'">
+        <form role="form" class="form-horizontal">
+            <table class="table table-striped">
+                <tr>
+                    <th>#</th>
+                    <th>Choice</th>
+                    <th>Delete</th>
+                </tr>
+                <tr ng-repeat="choice in question.choices">
+                    <td>{{$index}}</td>
+                    <td>{{choice}}</td>
+                    <td><button type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    </td>
+                </tr>
+            </table>
+            <div class="form-group">
+                <label class="control-label col-md-3" for="choice_add">New Choice:</label> 
+                <div class="col-md-6"><input class="form-control" id="choice_add" type="text" ng-model="formData.choiceToAdd"/></div>
+                <div class="col-md-3"><button type="button" class="btn btn-default" ng-click="addChoice()">Add Choice</button></div>
+            </div>
+        </form>
+        </div>
+        <button type="button" class="btn btn-primary" ng-click="addQuestion()">Add Question</button>
+    </div>
+</form>
+
+<div>{{question}}</div>
+<div>Choice to add: {{formData.choiceToAdd}}</div>
+<div>Quiz: {{quiz}}</div>

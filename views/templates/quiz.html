@@ -1,0 +1,27 @@
+<div class="container centered">
+    <h3>Nostradamus</h3>
+    <div>
+    <div class="panel panel-default">
+    <table id="resultTable" class="table table-striped table-hover" >
+        <thead><tr>
+            <th></th>
+            <th>Political Party</th>
+            <th>Candidate</th>
+            <th>Running Mate</th>
+            <th>%</th>
+            <th>Popular Vote</th>
+            <th>Electoral Vote</th>
+        </tr></thead>
+        <tr ng-repeat="resultIter in resultsData | orderBy: ['-electoral_vote', '-popular_vote']" class="{{getPartyClass(resultIter.party_id)}}" id="{{getUnspaced(resultIter.party_name)}}">
+            <td class="imageCol"><img class="candPic" ng-if="resultIter.percentage > .1" src="img/candidates/{{yearVal}}/{{resultIter.candidate_name}}.jpg"/><img class="candPic" ng-if="resultIter.percentage > .1" src="img/candidates/{{yearVal}}/{{resultIter.running_mate_name}}.jpg"/></td>
+            <td>{{resultIter.party_name}} </td> 
+            <td>{{resultIter.candidate_name}} </td>
+            <td>{{resultIter.running_mate_name}} </td>
+            <td>{{resultIter.percentage | percentage:2}} </td>
+            <td>{{resultIter.popular_vote | number}} </td>
+            <td>{{resultIter.electoral_vote | number}} </td>
+        </a>
+        </tr>
+    </table>
+    </div>
+</div>
