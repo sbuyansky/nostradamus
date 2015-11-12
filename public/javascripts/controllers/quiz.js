@@ -41,6 +41,15 @@ angular.module('nostradamus').controller('quizController', function($scope, $htt
         $scope.question = {};
     }
 
+	$scope.submitQuiz = function(){
+		$http.post("/api/quiz/", $scope.quiz)
+			.success(function(data){
+
+			}).error(function(err){
+				console.log(err);
+			}); 		
+	}
+
     function init(){
         //initialize category values
         getCategoryValues("question_type");
