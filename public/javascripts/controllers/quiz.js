@@ -1,4 +1,4 @@
-/* result controller */
+/* quiz create controller */
 
 angular.module('nostradamus').controller('quizController', function($scope, $http){
     $scope.formData = {};
@@ -48,6 +48,10 @@ angular.module('nostradamus').controller('quizController', function($scope, $htt
 			}).error(function(err){
 				console.log(err);
 			}); 		
+	}
+
+	$scope.getQuizHTML = function(){
+			
 	}
 
     function init(){

@@ -13,20 +13,53 @@ var async = require('async');
 */
 
 router.get('/quiz', function(req,res){
-    return queryResults("SELECT * FROM quiz", res); 
+    queryResults("SELECT * FROM quiz", function(results){
+		return res.json(results);
+	}); 
 });
 
 router.get('/question/:question_id', function(req,res){
-    return queryResults("SELECT * FROM questions WHERE question_id = " + req.params.question_id, res); 
+	queryResults("SELECT * FROM questions WHERE question_id = " + req.params.question_id, function(results){
+		return res.json(results);
+	}); 
 });
 
 router.get('/quiz/:quiz_id', function(req, res){
-	var unformattedResults =  queryResults("SELECT q.*, qu.question_id AS question_id, qu.text AS question_text, qu.type AS question_type, c.text AS choice_text FROM quiz q FULL OUTER JOIN quiz_questions qq ON q.quiz_id = qq.quiz_id FULL OUTER JOIN question qu ON qq.question_id = qu.question_id FULL OUTER JOIN q_to_a qa ON qq.question_id = qa.question_id FULL OUTER JOIN choices c ON qa.choice_id = c.choice_id WHERE q.quiz_id = '" +  req.params.quiz_id + "' ORDER BY qq.gui_order DESC", res);
+	var unformattedResults =  queryResults("SELECT q.*, qu.question_id AS question_id, qu.text AS question_text, qu.type AS question_type, c.text AS choice_text FROM quiz q FULL OUTER JOIN quiz_questions qq ON q.quiz_id = qq.quiz_id FULL OUTER JOIN question qu ON qq.question_id = qu.question_id FULL OUTER JOIN q_to_a qa ON qq.question_id = qa.question_id FULL OUTER JOIN choices c ON qa.choice_id = c.choice_id WHERE q.quiz_id = '" +  req.params.quiz_id + "' ORDER BY qq.gui_order ASC", 
 
-	//format results
-	//form	
+	function(unformattedResults){
 
-	return unformattedResults;
+		//format results
+
+		var results = {};
+		results.title = unformattedResults[0].title;
+		results.date = unformattedResults[0].for_date;
+		
+		results.questions = [];
+		var questionNum = 0;
+		var prevQuestionId = -1;
+		unformattedResults.forEach(
+			function(questionIter){
+				if(prevQuestionId != questionIter.question_id){
+					question = {};
+					question.type = questionIter.question_type;
+					question.text = questionIter.question_text;
+					prevQuestionId = questionIter.question_id;
+					if(question.type == 'multiple_select'){
+						question.choices = [];
+						question.choices.push(questionIter.choice_text);
+					}
+					results.questions[questionNum] = question;
+					questionNum++;
+				}
+				else{
+					results.questions[questionNum - 1].choices.push(questionIter.choice_text);
+				}		
+			}
+		);
+
+		return res.json(results);
+	});
 });
 
 router.post('/quiz', function(req, res) {
@@ -128,7 +161,7 @@ router.post('/quiz', function(req, res) {
 
 });
 
-var queryResults = function(querySQL, res){
+var queryResults = function(querySQL, callback){
     var results = [];
     pg.connect(connectionString, function(err, client, done) {
 		console.log(err);
@@ -140,7 +173,7 @@ var queryResults = function(querySQL, res){
 
         query.on('end', function() {
             client.end();
-            return res.json(results);
+            callback(results);
         });
 
         if(err) {
@@ -150,7 +183,9 @@ var queryResults = function(querySQL, res){
 }
 
 router.get('/category/:category', function(req,res){
-    return queryResults("SELECT unnest(enum_range(NULL::" + req.params.category + "))", res);
+    queryResults("SELECT unnest(enum_range(NULL::" + req.params.category + "))", function(results){
+		return res.json(results);
+	});
 });
 
 module.exports = router;

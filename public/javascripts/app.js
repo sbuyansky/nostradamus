@@ -8,7 +8,7 @@ var app = angular.module('nostradamus', ["ngResource","ngRoute","ngAnimate"]).
       $routeProvider
         .when("/", {
           templateUrl: "/views/templates/quiz.html",
-          controller: "quizController",
+          controller: "predictionController",
           activetab: 'Quiz'})
         .when("/create", {
           templateUrl: "/views/templates/quiz_create.html",

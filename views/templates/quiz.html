@@ -1,27 +1,25 @@
 <div class="container centered">
-    <h3>Nostradamus</h3>
-    <div>
-    <div class="panel panel-default">
-    <table id="resultTable" class="table table-striped table-hover" >
-        <thead><tr>
-            <th></th>
-            <th>Political Party</th>
-            <th>Candidate</th>
-            <th>Running Mate</th>
-            <th>%</th>
-            <th>Popular Vote</th>
-            <th>Electoral Vote</th>
-        </tr></thead>
-        <tr ng-repeat="resultIter in resultsData | orderBy: ['-electoral_vote', '-popular_vote']" class="{{getPartyClass(resultIter.party_id)}}" id="{{getUnspaced(resultIter.party_name)}}">
-            <td class="imageCol"><img class="candPic" ng-if="resultIter.percentage > .1" src="img/candidates/{{yearVal}}/{{resultIter.candidate_name}}.jpg"/><img class="candPic" ng-if="resultIter.percentage > .1" src="img/candidates/{{yearVal}}/{{resultIter.running_mate_name}}.jpg"/></td>
-            <td>{{resultIter.party_name}} </td> 
-            <td>{{resultIter.candidate_name}} </td>
-            <td>{{resultIter.running_mate_name}} </td>
-            <td>{{resultIter.percentage | percentage:2}} </td>
-            <td>{{resultIter.popular_vote | number}} </td>
-            <td>{{resultIter.electoral_vote | number}} </td>
-        </a>
-        </tr>
-    </table>
-    </div>
+	<h3>Nostradamus</h3>
+	<form>
+	<div class="form-group" ng-repeat="question in quizData.questions">
+		<label class="control-label" for="q_{{$$index}}"> {{question.text}} </label>
+		<div class="" ng-if="question.type == 'numeric'">
+			<input class="form-control" type="number">
+		</div>
+
+		<div class="" ng-if="question.type == 'multiple_select'">
+			<div class="btn-group" data-toggle="buttons">
+				<label class="btn btn-primary" ng-repeat="choice in question.choices">
+					<input type="radio" name="options" id="o_{{choice}}"> {{choice}}
+				</label>
+			</div>
+		</div>
+
+		<div class="" ng-if="question.type == 'time'">
+			<input class="form-control" type="time">
+		</div>
+	</div>
+			<button ng-if="quiz.questions.length > 0" type="button" class="btn btn-primary" ng-click="submitQuiz()">Submit Quiz</button>
+
+	</form>
 </div>
