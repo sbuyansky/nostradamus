@@ -21,7 +21,12 @@ router.get('/question/:question_id', function(req,res){
 });
 
 router.get('/quiz/:quiz_id', function(req, res){
-	var unformattedResults =  queryResults("SELECT q.*, qu.question_id AS question_id, qu.text AS question_text, qu.type AS question_type, c.text AS choice_text FROM quiz q FULL OUTER JOIN quiz_questions qq ON q.quiz_id = qq.quiz_id FULL OUTER JOIN question qu ON qq.question_id = qu.question_id FULL OUTER JOIN q_to_a qa ON qq.question_id = qa.question_id FULL OUTER JOIN choices c ON qa.choice_id = c.choice_id WHERE q.quiz_id = '" +  req.params.quiz_id + "';", res);
+	var unformattedResults =  queryResults("SELECT q.*, qu.question_id AS question_id, qu.text AS question_text, qu.type AS question_type, c.text AS choice_text FROM quiz q FULL OUTER JOIN quiz_questions qq ON q.quiz_id = qq.quiz_id FULL OUTER JOIN question qu ON qq.question_id = qu.question_id FULL OUTER JOIN q_to_a qa ON qq.question_id = qa.question_id FULL OUTER JOIN choices c ON qa.choice_id = c.choice_id WHERE q.quiz_id = '" +  req.params.quiz_id + "' ORDER BY qq.gui_order DESC", res);
+
+	//format results
+	//form	
+
+	return unformattedResults;
 });
 
 router.post('/quiz', function(req, res) {
@@ -44,7 +49,7 @@ router.post('/quiz', function(req, res) {
 
 			//create questions
 			var questionResults = [];
-			async.each(quiz.questions, function(question, callback){
+			async.eachSeries(quiz.questions, function(question, callback){
 				console.log("creating question: " + question);
 				query  = client.query("INSERT INTO question(type, text) values($1,$2) RETURNING question_id", [question.type, question.text]);
 
@@ -63,7 +68,7 @@ router.post('/quiz', function(req, res) {
 					console.log(question);	
 					if(question.type == 'multiple_select'){
 						var choiceResults = [];
-						async.each(question.choices, function(choice, callback2){
+						async.eachSeries(question.choices, function(choice, callback2){
 							//create choices if they don't exist
 							var choiceQuery = "with s as (" +
 								"select choice_id, text " + 
@@ -94,15 +99,17 @@ router.post('/quiz', function(req, res) {
 
 								//link question and choices
 								client.query("INSERT INTO q_to_a(question_id, choice_id) values($1,$2)", [question_id, choice_id]);
+							console.log("callback2");
 							callback2(null,choice);
 							});
 						}, 
 						function(err){
-							console.log("choice done");
+							console.log("callback/choice done");
 							callback(null, question);	
 						});
 					}
 					else{
+						console.log("callback");
 						callback(null,question);
 					}	
 				});
