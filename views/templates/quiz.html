@@ -1,10 +1,10 @@
 <div class="container centered">
-	<h3>Nostradamus</h3>
+	<h3>{{quizData.title}}</h3>
 	<form>
 	<div class="form-group" ng-repeat="question in quizData.questions">
 		<label class="control-label" for="q_{{$$index}}"> {{question.text}} </label>
 		<div class="" ng-if="question.type == 'numeric'">
-			<input class="form-control" type="number">
+			<input ng-model="questions[$index]" class="form-control" type="number">
 		</div>
 
 		<div class="" ng-if="question.type == 'multiple_select'">

@@ -6,7 +6,7 @@ var app = angular.module('nostradamus', ["ngResource","ngRoute","ngAnimate"]).
     function($routeProvider, $locationProvider) {
       $locationProvider.html5Mode(true); //get rid of hashtags, will have to test with older browsers
       $routeProvider
-        .when("/", {
+        .when("/quiz/:quiz_id", {
           templateUrl: "/views/templates/quiz.html",
           controller: "predictionController",
           activetab: 'Quiz'})
@@ -14,7 +14,7 @@ var app = angular.module('nostradamus', ["ngResource","ngRoute","ngAnimate"]).
           templateUrl: "/views/templates/quiz_create.html",
           controller: "quizController",
           activetab: 'Create'})
-        .otherwise({ redirectTo: "/" });
+        .otherwise({ redirectTo: "/create" });
     }
   ]
 )
